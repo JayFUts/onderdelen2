@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bart Autosloperij - Onderdelen Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Header */
+        .header {
+            background: #000000;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-text {
+            color: white;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+        
+        .logo-subtext {
+            color: #00A8CC;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: -5px;
+        }
+        
+        .logo-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00A8CC;
+            border-radius: 50%;
+            margin-left: 5px;
+            display: inline-block;
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        /* Dashboard Title */
+        .dashboard-title {
+            color: #00A8CC;
+            font-size: 40px;
+            font-weight: 900;
+            margin-bottom: 30px;
+        }
+        
+        /* Status Bar */
+        .status-bar {
+            background: #00A8CC;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #4ADE80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+        }
+        
+        /* Form Card */
+        .form-card {
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-input {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #00A8CC;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: #999;
+        }
+        
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background-color: #00A8CC;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0090B0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 168, 204, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: #006A85;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #005570;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 106, 133, 0.3);
+        }
+        
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Error Alert */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-danger {
+            background-color: #fee;
+            color: #dc2626;
+            border-left: 4px solid #dc2626;
+        }
+        
+        .alert-success {
+            background-color: #f0f9ff;
+            color: #0369a1;
+            border-left: 4px solid #0369a1;
+        }
+        
+        /* Categories Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            color: #00A8CC;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .close {
+            color: #999;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: -10px;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .category-list {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-item:hover {
+            border-color: #00A8CC;
+            background-color: #f8fafc;
+        }
+        
+        .category-item.selected {
+            border-color: #00A8CC;
+            background-color: #f0f9ff;
+        }
+        
+        .category-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: #00A8CC;
+        }
+        
+        .category-info {
+            flex-grow: 1;
+        }
+        
+        .category-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .category-description {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Progress Section */
+        .progress-section {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .progress-title {
+            color: #00A8CC;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar-container {
+            background-color: #e0e0e0;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 30px;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #00A8CC 0%, #006A85 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,168,204,.3);
+            border-radius: 50%;
+            border-top-color: #00A8CC;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Price Analysis Styles */
+        .price-analysis-section {
+            margin-top: 40px;
+        }
+        
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .recommendation-card {
+            background: white;
+            border: 2px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .recommendation-card:hover {
+            border-color: #00A8CC;
+            box-shadow: 0 4px 12px rgba(0,168,204,0.1);
+        }
+        
+        .recommendation-card.market {
+            border-color: #00A8CC;
+            background: linear-gradient(135deg, #f8fdff 0%, #e6f9ff 100%);
+        }
+        
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .recommendation-header h4 {
+            margin: 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .price-badge {
+            background: #f0f0f0;
+            color: #333;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .price-badge.highlighted {
+            background: #00A8CC;
+            color: white;
+        }
+        
+        .competitive-tool {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .condition-analysis, .supplier-analysis {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .analysis-table th,
+        .analysis-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .analysis-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .analysis-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .competitive-product {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .competitive-product:hover {
+            border-color: #00A8CC;
+            box-shadow: 0 2px 8px rgba(0,168,204,0.1);
+        }
+        
+        .competitive-product .product-info h5 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        
+        .competitive-product .product-info p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .competitive-product .price-info {
+            text-align: right;
+        }
+        
+        .competitive-product .price-info .price {
+            font-size: 18px;
+            font-weight: 600;
+            color: #00A8CC;
+        }
+        
+        .competitive-product .price-info .supplier {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .category-card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-card:hover {
+            border-color: #00A8CC;
+            box-shadow: 0 4px 12px rgba(0,168,204,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .category-card h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .category-card .category-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .category-card .category-price {
+            font-size: 18px;
+            font-weight: 600;
+            color: #00A8CC;
+        }
+        
+        .category-card .category-price.no-price {
+            color: #999;
+            font-style: italic;
+        }
+        
+        /* Results Section */
+        .results-section {
+            display: none;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: 900;
+            color: #00A8CC;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .results-table-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+            padding: 15px 10px;
+            text-align: left;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .table td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .product-price {
+            font-weight: 700;
+            color: #00A8CC;
+            font-size: 18px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-title {
+                font-size: 32px;
+            }
+            
+            .form-card {
+                padding: 25px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div>
+                    <div class="logo-text">Bart<span class="logo-dot"></span></div>
+                    <div class="logo-subtext">AUTOSLOPERIJ</div>
+                </div>
+            </div>
+            <div style="color: white; font-size: 14px;">
+                Van (sloop)auto tot onderdeel, bij ons vind je alles
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Dashboard Title -->
+        <h1 class="dashboard-title">Onderdelen Dashboard</h1>
+        
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-dot"></div>
+            <span id="systemStatus">Systeem actief en gereed</span>
+        </div>
+        
+        <!-- Error/Success Alerts -->
+        <div class="alert alert-danger" id="errorAlert">
+            <span id="errorMessage"></span>
+        </div>
+        
+        <div class="alert alert-success" id="successAlert">
+            <span id="successMessage"></span>
+        </div>
+        
+        <!-- Form Card -->
+        <div class="form-card" id="searchForm">
+            <div class="form-grid">
+                <!-- Kenteken Field -->
+                <div class="form-group">
+                    <label for="licensePlate" class="form-label">Kenteken</label>
+                    <input 
+                        type="text" 
+                        id="licensePlate" 
+                        name="licensePlate" 
+                        class="form-input" 
+                        placeholder="Bijv. AB-123-CD"
+                        maxlength="8"
+                        required
+                    />
+                </div>
+                
+                <!-- Onderdeel Field -->
+                <div class="form-group">
+                    <label for="partName" class="form-label">Onderdeel</label>
+                    <input 
+                        type="text" 
+                        id="partName" 
+                        name="partName" 
+                        class="form-input" 
+                        placeholder="Bijv. Remschijf, Accu, Motorblok"
+                        required
+                    />
+                </div>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="button-group">
+                <button class="btn btn-primary" id="searchButton">Zoeken</button>
+                <button class="btn btn-secondary" id="resetButton">Wissen</button>
+            </div>
+        </div>
+        
+        <!-- Progress Section -->
+        <div class="progress-section" id="progressSection">
+            <h2 class="progress-title">
+                <span class="loading-spinner"></span>
+                Bezig met zoeken...
+            </h2>
+            <p id="progressText">Voorbereiden...</p>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar">0%</div>
+            </div>
+            <small style="color: #666;">Dit kan enkele minuten duren afhankelijk van het aantal producten</small>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalProducts">0</div>
+                    <div class="stat-label">Producten gevonden</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPages">0</div>
+                    <div class="stat-label">Pagina's gescand</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="searchDuration">0s</div>
+                    <div class="stat-label">Zoektijd</div>
+                </div>
+                <div class="stat-card">
+                    <button class="btn btn-primary" id="exportButton" onclick="exportResults()">
+                        Export CSV
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Results Table -->
+            <div class="results-table-container">
+                <h2 style="color: #00A8CC; margin-bottom: 20px;">Gevonden Onderdelen</h2>
+                <div style="overflow-x: auto;">
+                    <!-- Toggle buttons for table view -->
+                    <div style="margin-bottom: 20px;">
+                        <button class="btn btn-secondary" onclick="toggleTableView('basic')" id="basicViewBtn">Basis Weergave</button>
+                        <button class="btn btn-primary" onclick="toggleTableView('detailed')" id="detailedViewBtn">Uitgebreide Weergave</button>
+                        <button class="btn btn-secondary" onclick="toggleTableView('technical')" id="technicalViewBtn">Technische Details</button>
+                    </div>
+                    
+                    <table class="table" id="resultsTable">
+                        <thead id="tableHeader">
+                            <!-- Headers will be dynamically inserted based on view mode -->
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <!-- Results will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- New Search Button -->
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-primary" onclick="resetSearch()">Nieuwe Zoekopdracht</button>
+                <button class="btn btn-success" onclick="showPriceAnalysis()" style="margin-left: 10px;">📊 Prijsanalyse</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Price Analysis Section -->
+    <div class="price-analysis-section" id="priceAnalysisSection" style="display: none;">
+        <div class="card">
+            <div class="card-header">
+                <h2 id="analysisTitle">📊 Markt & Prijsanalyse</h2>
+                <p>Gebruik deze analyse om concurrerende prijzen te bepalen voor je onderdelen</p>
+                
+                <!-- Category Selection -->
+                <div id="categorySelection" style="margin-top: 15px; display: none;">
+                    <label for="analysisCategory" style="margin-right: 10px; font-weight: 600;">Analyseer per categorie:</label>
+                    <select id="analysisCategory" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 10px;">
+                        <option value="">Alle categorieën</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="filterAnalysisByCategory()">Filter</button>
+                </div>
+            </div>
+            
+            <!-- Analysis Loading -->
+            <div id="analysisLoading" class="text-center" style="padding: 40px;">
+                <div class="spinner"></div>
+                <p style="margin-top: 20px; color: #666;">Marktanalyse wordt uitgevoerd...</p>
+            </div>
+            
+            <!-- Analysis Results -->
+            <div id="analysisResults" style="display: none;">
+                <!-- Category Overview (alleen bij algemene analyse) -->
+                <div id="categoryOverview" style="margin-bottom: 30px; display: none;">
+                    <h3 style="margin-bottom: 20px; color: #00A8CC;">📦 Categorieën Overzicht</h3>
+                    <div id="categoryCards" class="recommendations-grid">
+                        <!-- Category cards will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Market Overview -->
+                <div class="stats-grid" style="margin-bottom: 30px;">
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgPrice">€0</div>
+                        <div class="stat-label">Gemiddelde Prijs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="medianPrice">€0</div>
+                        <div class="stat-label">Mediaan Prijs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="priceRange">€0</div>
+                        <div class="stat-label">Prijsrange</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalWithPrices">0</div>
+                        <div class="stat-label">Producten met Prijs</div>
+                    </div>
+                </div>
+
+                <!-- Price Recommendations -->
+                <div class="recommendations-section" style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 20px; color: #00A8CC;">💡 Prijsaanbevelingen</h3>
+                    <div class="recommendations-grid">
+                        <div class="recommendation-card conservative">
+                            <div class="recommendation-header">
+                                <h4>Conservatief</h4>
+                                <span class="price-badge" id="conservativePrice">€0</span>
+                            </div>
+                            <p id="conservativeDesc">Veilige prijs onder marktgemiddelde</p>
+                        </div>
+                        <div class="recommendation-card market">
+                            <div class="recommendation-header">
+                                <h4>Marktconform</h4>
+                                <span class="price-badge highlighted" id="marketPrice">€0</span>
+                            </div>
+                            <p id="marketDesc">Prijs conform marktgemiddelde</p>
+                        </div>
+                        <div class="recommendation-card premium">
+                            <div class="recommendation-header">
+                                <h4>Premium</h4>
+                                <span class="price-badge" id="premiumPrice">€0</span>
+                            </div>
+                            <p id="premiumDesc">Hogere prijs voor kwaliteit/service</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Competitive Analysis Tool -->
+                <div class="competitive-tool" style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 20px; color: #00A8CC;">🎯 Concurrentie Scanner</h3>
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <label for="targetPrice">Jouw doelprijs:</label>
+                            <input type="number" id="targetPrice" placeholder="€25.00" step="0.01" min="0" 
+                                   style="width: 120px; margin-left: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div>
+                            <label for="priceMargin">Marge:</label>
+                            <select id="priceMargin" style="width: 80px; margin-left: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="0.05">5%</option>
+                                <option value="0.10" selected>10%</option>
+                                <option value="0.15">15%</option>
+                                <option value="0.20">20%</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="analyzeCompetition()">Analyseer Concurrentie</button>
+                    </div>
+                    <div id="competitiveResults" style="display: none;">
+                        <!-- Competitive results will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Condition Analysis -->
+                <div class="condition-analysis" style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 20px; color: #00A8CC;">🏷️ Prijzen per Conditie</h3>
+                    <div id="conditionAnalysis">
+                        <!-- Condition analysis will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Supplier Analysis -->
+                <div class="supplier-analysis">
+                    <h3 style="margin-bottom: 20px; color: #00A8CC;">🏢 Top Aanbieders</h3>
+                    <div id="supplierAnalysis">
+                        <!-- Supplier analysis will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="hidePriceAnalysis()">Sluiten</button>
+                <button class="btn btn-primary" onclick="exportAnalysis()" style="margin-left: 10px;">📋 Exporteer Analyse</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Selection Modal -->
+    <div id="categoriesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeCategoriesModal()">&times;</span>
+                <h2 class="modal-title">Selecteer Categorieën</h2>
+                <p style="color: #666; margin-top: 10px;">
+                    We hebben meerdere categorieën gevonden voor "<span id="searchTerm"></span>". 
+                    Selecteer de categorieën waarin u wilt zoeken:
+                </p>
+            </div>
+            <div class="category-list" id="categoryList">
+                <!-- Categories will be inserted here -->
+            </div>
+            <div style="margin-top: 30px; text-align: right;">
+                <button class="btn btn-secondary" onclick="closeCategoriesModal()" style="margin-right: 10px;">Annuleren</button>
+                <button class="btn btn-primary" onclick="startSelectedSearch()">Zoeken in Geselecteerde</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSessionId = null;
+        let statusInterval = null;
+        let selectedCategories = [];
+        let currentLicensePlate = '';
+        let currentPartName = '';
+        let currentProducts = [];
+        let currentTableView = 'basic';
+
+        // Format kenteken automatically
+        document.getElementById('licensePlate').addEventListener('input', function(e) {
+            let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            let formatted = '';
+            
+            if (value.length > 0) {
+                if (value.length <= 2) {
+                    formatted = value;
+                } else if (value.length <= 4) {
+                    formatted = value.substr(0, 2) + '-' + value.substr(2);
+                } else {
+                    formatted = value.substr(0, 2) + '-' + value.substr(2, 2) + '-' + value.substr(4, 2);
+                }
+            }
+            
+            e.target.value = formatted;
+        });
+
+        // Search button event
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const licensePlate = document.getElementById('licensePlate').value;
+            const partName = document.getElementById('partName').value;
+            
+            if (!licensePlate || !partName) {
+                showError('Vul beide velden in om te zoeken');
+                return;
+            }
+            
+            currentLicensePlate = licensePlate;
+            currentPartName = partName;
+            
+            // First check available categories
+            checkCategories(licensePlate, partName);
+        });
+
+        // Reset button event
+        document.getElementById('resetButton').addEventListener('click', function() {
+            resetForm();
+        });
+
+        function checkCategories(licensePlate, partName) {
+            showAlert('success', 'Beschikbare categorieën ophalen...');
+            updateSystemStatus('Categorieën zoeken...');
+            
+            fetch('/api/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    license_plate: licensePlate,
+                    part_name: partName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+                
+                if (data.categories && data.categories.length > 1) {
+                    // Multiple categories found - show selection modal
+                    showCategoriesModal(data.categories, partName);
+                } else if (data.categories && data.categories.length === 1) {
+                    // Only one category - start search directly
+                    selectedCategories = [data.categories[0]];
+                    startSearch();
+                } else {
+                    showError('Geen categorieën gevonden voor dit onderdeel');
+                }
+            })
+            .catch(error => {
+                showError('Er is een fout opgetreden bij het ophalen van categorieën');
+                updateSystemStatus('Systeem actief en gereed');
+            });
+        }
+
+        function showCategoriesModal(categories, partName) {
+            const modal = document.getElementById('categoriesModal');
+            const categoryList = document.getElementById('categoryList');
+            const searchTerm = document.getElementById('searchTerm');
+            
+            searchTerm.textContent = partName;
+            categoryList.innerHTML = '';
+            
+            categories.forEach((category, index) => {
+                const categoryItem = document.createElement('div');
+                categoryItem.className = 'category-item';
+                categoryItem.dataset.url = category.url; // Store URL in data attribute
+                categoryItem.onclick = () => toggleCategory(index, categoryItem, category);
+                
+                categoryItem.innerHTML = `
+                    <input type="checkbox" class="category-checkbox" id="cat_${index}">
+                    <div class="category-info">
+                        <div class="category-name">${category.name}</div>
+                        <div class="category-description">
+                            ${category.description || 'Bekijk producten in deze categorie'}
+                        </div>
+                    </div>
+                `;
+                
+                categoryList.appendChild(categoryItem);
+            });
+            
+            // Select all categories by default
+            categories.forEach((category, index) => {
+                toggleCategory(index, categoryList.children[index], category);
+            });
+            
+            modal.style.display = 'block';
+            updateSystemStatus('Wachten op categorie selectie...');
+        }
+
+        function toggleCategory(index, element, category) {
+            const checkbox = element.querySelector('.category-checkbox');
+            const isSelected = element.classList.contains('selected');
+            
+            if (isSelected) {
+                element.classList.remove('selected');
+                checkbox.checked = false;
+                selectedCategories = selectedCategories.filter(cat => cat.index !== index);
+            } else {
+                element.classList.add('selected');
+                checkbox.checked = true;
+                
+                const categoryData = {
+                    index: index,
+                    name: category.name,
+                    url: category.url,
+                    description: category.description
+                };
+                selectedCategories.push(categoryData);
+            }
+        }
+
+        function closeCategoriesModal() {
+            document.getElementById('categoriesModal').style.display = 'none';
+            updateSystemStatus('Systeem actief en gereed');
+        }
+
+        function startSelectedSearch() {
+            if (selectedCategories.length === 0) {
+                showError('Selecteer minimaal één categorie');
+                return;
+            }
+            
+            closeCategoriesModal();
+            startSearch();
+        }
+
+        function startSearch() {
+            // Hide form and alerts
+            hideAlerts();
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('progressSection').style.display = 'block';
+            
+            updateProgress('Zoeken wordt gestart...', 0);
+            updateSystemStatus('Zoeken...');
+            
+            // Start scraping with selected categories
+            fetch('/api/scrape', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    license_plate: currentLicensePlate,
+                    part_name: currentPartName,
+                    selected_categories: selectedCategories
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                    document.getElementById('progressSection').style.display = 'none';
+                    return;
+                }
+                
+                currentSessionId = data.session_id;
+                // Start status polling
+                statusInterval = setInterval(checkStatus, 1000);
+            })
+            .catch(error => {
+                showError('Er is een fout opgetreden bij het starten van de zoekopdracht');
+                document.getElementById('progressSection').style.display = 'none';
+                updateSystemStatus('Systeem actief en gereed');
+            });
+        }
+
+        function checkStatus() {
+            if (!currentSessionId) return;
+            
+            fetch(`/api/status/${currentSessionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'entering_license_plate') {
+                        updateProgress('Kenteken invoeren...', 10);
+                    } else if (data.status === 'finding_categories') {
+                        updateProgress('Categorieën zoeken...', 20);
+                    } else if (data.status === 'scraping') {
+                        const progress = 20 + (data.progress * 0.7);
+                        updateProgress(
+                            `Producten verzamelen... (Pagina ${data.current_page}, ${data.product_count} producten gevonden)`,
+                            progress
+                        );
+                    } else if (data.status === 'completed') {
+                        updateProgress('Zoeken voltooid!', 100);
+                        clearInterval(statusInterval);
+                        loadResults();
+                    } else if (data.status === 'error') {
+                        showError(data.error || 'Er is een fout opgetreden tijdens het zoeken');
+                        clearInterval(statusInterval);
+                        document.getElementById('progressSection').style.display = 'none';
+                        updateSystemStatus('Systeem actief en gereed');
+                    }
+                });
+        }
+
+        function loadResults() {
+            fetch(`/api/results/${currentSessionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update statistics
+                    document.getElementById('totalProducts').textContent = data.total;
+                    document.getElementById('totalPages').textContent = Math.ceil(data.total / 10);
+                    document.getElementById('searchDuration').textContent = formatDuration(data.duration);
+                    
+                    // Store products for different view modes
+                    currentProducts = data.products;
+                    
+                    // Show results section
+                    document.getElementById('progressSection').style.display = 'none';
+                    document.getElementById('resultsSection').style.display = 'block';
+                    
+                    // Render table with current view mode
+                    renderTable(currentTableView);
+                    
+                    updateSystemStatus(`${data.total} producten gevonden`);
+                });
+        }
+
+        function toggleTableView(viewMode) {
+            currentTableView = viewMode;
+            
+            // Update button states
+            document.querySelectorAll('[id$="ViewBtn"]').forEach(btn => {
+                btn.className = 'btn btn-secondary';
+            });
+            document.getElementById(viewMode + 'ViewBtn').className = 'btn btn-primary';
+            
+            // Re-render table
+            renderTable(viewMode);
+        }
+
+        function renderTable(viewMode) {
+            const thead = document.getElementById('tableHeader');
+            const tbody = document.getElementById('resultsTableBody');
+            
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+            
+            let headers = [];
+            let columns = [];
+            
+            if (viewMode === 'basic') {
+                headers = ['Afbeelding', 'Titel', 'Soort', 'Prijs', 'Bouwjaar', 'Tellerstand', 'Garantie', 'Aanbieder'];
+                columns = ['afbeelding', 'titel', 'soort_onderdeel', 'prijs', 'bouwjaar', 'tellerstand', 'garantie', 'aanbieder'];
+            } else if (viewMode === 'detailed') {
+                headers = ['Afbeelding', 'Titel', 'Soort', 'Prijs', 'Type', 'Bouwjaar', 'Tellerstand', 'Brandstof', 'Garantie', 'Aanbieder', 'Locatie', 'Product ID', 'Match', 'Bestelbaar'];
+                columns = ['afbeelding', 'titel', 'soort_onderdeel', 'prijs', 'prijs_type', 'bouwjaar', 'tellerstand', 'brandstof', 'garantie', 'aanbieder', 'locatie', 'product_id', 'match_kleur', 'direct_bestelbaar'];
+            } else if (viewMode === 'technical') {
+                headers = ['Titel', 'Soort', 'Bouwjaar', 'Motorinhoud', 'Brandstof', 'Classificatiecode', 'Artikelnummer', 'Kleur', 'Opmerkingen'];
+                columns = ['titel', 'soort_onderdeel', 'bouwjaar', 'motorinhoud', 'brandstof', 'classificatiecode', 'artikelnummer', 'kleur', 'opmerkingen'];
+            }
+            
+            // Create header row
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            
+            // Create data rows
+            currentProducts.forEach(product => {
+                const row = document.createElement('tr');
+                
+                columns.forEach((column, index) => {
+                    const cell = document.createElement('td');
+                    
+                    if (column === 'afbeelding') {
+                        if (product.afbeelding_url && product.afbeelding_url !== 'Geen afbeelding') {
+                            cell.innerHTML = `<img src="${product.afbeelding_url}" class="product-image" alt="Product">`;
+                        } else {
+                            cell.innerHTML = '<div style="width: 80px; height: 80px; background: #f0f0f0; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">Geen foto</div>';
+                        }
+                    } else if (column === 'prijs') {
+                        const priceValue = product[column] || 'Onbekend';
+                        cell.innerHTML = `<span class="product-price">${priceValue}</span>`;
+                        
+                        // Add price type if available
+                        if (product.prijs_type && product.prijs_type !== 'Standaard') {
+                            cell.innerHTML += `<br><small style="color: #666;">${product.prijs_type}</small>`;
+                        }
+                    } else if (column === 'titel') {
+                        const title = product[column] || 'Onbekend';
+                        cell.innerHTML = `<strong>${title}</strong>`;
+                        
+                        // Add link if available
+                        if (product.product_link && product.product_link !== 'Geen link') {
+                            cell.innerHTML = `<a href="${product.product_link}" target="_blank" style="text-decoration: none; color: inherit;"><strong>${title}</strong></a>`;
+                        }
+                    } else if (column === 'garantie') {
+                        const garantie = product[column] || 'Onbekend';
+                        cell.textContent = garantie;
+                        
+                        // Add structured guarantee info if available
+                        if (product.garantie_periode && product.garantie_periode !== 'Onbekend') {
+                            cell.innerHTML = `${garantie}<br><small style="color: #666;">${product.garantie_periode} ${product.garantie_eenheid}</small>`;
+                        }
+                    } else if (column === 'tellerstand') {
+                        const tellerstand = product[column] || 'Niet opgegeven';
+                        cell.textContent = tellerstand;
+                        
+                        // Add age calculation if available
+                        if (product.leeftijd_jaren && product.leeftijd_jaren !== 'Onbekend') {
+                            cell.innerHTML = `${tellerstand}<br><small style="color: #666;">${product.leeftijd_jaren} jaar oud</small>`;
+                        }
+                    } else if (column === 'match_kleur') {
+                        const matchColor = product[column] || 'unknown';
+                        const colorMap = {
+                            'green': { text: 'Goede match', color: '#28a745' },
+                            'orange': { text: 'Gemiddelde match', color: '#ffc107' },
+                            'red': { text: 'Lage match', color: '#dc3545' },
+                            'unknown': { text: 'Onbekend', color: '#6c757d' }
+                        };
+                        const colorInfo = colorMap[matchColor] || colorMap['unknown'];
+                        cell.innerHTML = `<span style="color: ${colorInfo.color}; font-weight: bold;">●</span> ${colorInfo.text}`;
+                        
+                        // Add match description if available
+                        if (product.match_beschrijving && product.match_beschrijving !== 'Geen match info') {
+                            cell.title = product.match_beschrijving;
+                        }
+                    } else if (column === 'direct_bestelbaar') {
+                        const bestelbaar = product[column] || false;
+                        cell.innerHTML = bestelbaar ? 
+                            '<span style="color: #28a745; font-weight: bold;">✓ Ja</span>' : 
+                            '<span style="color: #dc3545;">✗ Nee</span>';
+                    } else if (column === 'product_id') {
+                        const productId = product[column] || 'Onbekend';
+                        cell.textContent = productId;
+                        
+                        // Add link if available
+                        if (product.product_link && product.product_link !== 'Geen link') {
+                            cell.innerHTML = `<a href="${product.product_link}" target="_blank" style="text-decoration: none;">${productId}</a>`;
+                        }
+                    } else if (column === 'opmerkingen') {
+                        const opmerkingen = product[column] || 'Geen opmerkingen';
+                        if (opmerkingen.length > 50) {
+                            cell.innerHTML = `${opmerkingen.substring(0, 47)}...<br><small style="color: #666;">[Klik voor volledig]</small>`;
+                            cell.title = opmerkingen;
+                            cell.style.cursor = 'pointer';
+                        } else {
+                            cell.textContent = opmerkingen;
+                        }
+                    } else {
+                        const value = product[column] || 'Niet opgegeven';
+                        cell.textContent = value;
+                    }
+                    
+                    row.appendChild(cell);
+                });
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateProgress(text, percentage) {
+            document.getElementById('progressText').textContent = text;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = Math.round(percentage) + '%';
+        }
+
+        function updateSystemStatus(status) {
+            document.getElementById('systemStatus').textContent = status;
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorAlert').style.display = 'block';
+            document.getElementById('successAlert').style.display = 'none';
+        }
+
+        function showAlert(type, message) {
+            if (type === 'success') {
+                document.getElementById('successMessage').textContent = message;
+                document.getElementById('successAlert').style.display = 'block';
+                document.getElementById('errorAlert').style.display = 'none';
+            } else {
+                showError(message);
+            }
+        }
+
+        function hideAlerts() {
+            document.getElementById('errorAlert').style.display = 'none';
+            document.getElementById('successAlert').style.display = 'none';
+        }
+
+        function resetForm() {
+            document.getElementById('licensePlate').value = '';
+            document.getElementById('partName').value = '';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('progressSection').style.display = 'none';
+            hideAlerts();
+            currentSessionId = null;
+            selectedCategories = [];
+            updateSystemStatus('Systeem actief en gereed');
+        }
+
+        function resetSearch() {
+            resetForm();
+        }
+
+        function exportResults() {
+            if (!currentSessionId) return;
+            window.location.href = `/api/export/${currentSessionId}`;
+        }
+
+        function formatDuration(duration) {
+            const match = duration.match(/(\d+):(\d+):(\d+)/);
+            if (match) {
+                const hours = parseInt(match[1]);
+                const minutes = parseInt(match[2]);
+                const seconds = parseInt(match[3]);
+                
+                if (hours > 0) {
+                    return `${hours}u ${minutes}m`;
+                } else if (minutes > 0) {
+                    return `${minutes}m ${seconds}s`;
+                } else {
+                    return `${seconds}s`;
+                }
+            }
+            return duration;
+        }
+
+        // Global variable voor huidige categorie filter
+        let currentAnalysisCategory = null;
+
+        // Price Analysis Functions
+        function showPriceAnalysis(category = null) {
+            if (!currentSessionId) {
+                showError('Geen resultaten beschikbaar voor analyse');
+                return;
+            }
+            
+            currentAnalysisCategory = category;
+            
+            document.getElementById('priceAnalysisSection').style.display = 'block';
+            document.getElementById('analysisLoading').style.display = 'block';
+            document.getElementById('analysisResults').style.display = 'none';
+            
+            // Update title
+            if (category) {
+                document.getElementById('analysisTitle').textContent = `📊 Prijsanalyse: ${category}`;
+            } else {
+                document.getElementById('analysisTitle').textContent = `📊 Markt & Prijsanalyse`;
+            }
+            
+            // Scroll naar analyse sectie
+            document.getElementById('priceAnalysisSection').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+            
+            // Haal prijsanalyse op (met optionele categorie filter)
+            const url = category ? `/api/price-analysis/${currentSessionId}?category=${encodeURIComponent(category)}` 
+                                 : `/api/price-analysis/${currentSessionId}`;
+                                 
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showError(data.error);
+                        return;
+                    }
+                    displayPriceAnalysis(data);
+                })
+                .catch(error => {
+                    showError('Fout bij het laden van de prijsanalyse');
+                    console.error('Error:', error);
+                });
+        }
+        
+        function hidePriceAnalysis() {
+            document.getElementById('priceAnalysisSection').style.display = 'none';
+        }
+        
+        function displayPriceAnalysis(data) {
+            document.getElementById('analysisLoading').style.display = 'none';
+            document.getElementById('analysisResults').style.display = 'block';
+            
+            // Show/hide category overview and selector
+            if (!data.categorie && data.alle_categorieën) {
+                // Algemene analyse - toon categorieoverzicht
+                displayCategoryOverview(data.alle_categorieën);
+                document.getElementById('categoryOverview').style.display = 'block';
+                document.getElementById('categorySelection').style.display = 'block';
+                populateCategorySelector(data.alle_categorieën);
+            } else {
+                // Categorie-specifieke analyse
+                document.getElementById('categoryOverview').style.display = 'none';
+                document.getElementById('categorySelection').style.display = 'block';
+                if (data.alle_categorieën) {
+                    populateCategorySelector(data.alle_categorieën);
+                }
+            }
+            
+            // Update market overview
+            const stats = data.samenvatting;
+            if (stats.producten_met_prijs > 0) {
+                document.getElementById('avgPrice').textContent = `€${stats.gemiddelde_prijs}`;
+                document.getElementById('medianPrice').textContent = `€${stats.mediaan_prijs}`;
+                document.getElementById('priceRange').textContent = `€${stats.minimum_prijs} - €${stats.maximum_prijs}`;
+                document.getElementById('totalWithPrices').textContent = stats.producten_met_prijs;
+                
+                // Update recommendations
+                const recs = data.prijsaanbevelingen;
+                if (recs.conservatief) {
+                    document.getElementById('conservativePrice').textContent = `€${recs.conservatief.prijs}`;
+                    document.getElementById('conservativeDesc').textContent = recs.conservatief.rationale;
+                }
+                if (recs.marktconform) {
+                    document.getElementById('marketPrice').textContent = `€${recs.marktconform.prijs}`;
+                    document.getElementById('marketDesc').textContent = recs.marktconform.rationale;
+                }
+                if (recs.premium) {
+                    document.getElementById('premiumPrice').textContent = `€${recs.premium.prijs}`;
+                    document.getElementById('premiumDesc').textContent = recs.premium.rationale;
+                }
+            } else {
+                // Geen prijzen beschikbaar
+                document.getElementById('avgPrice').textContent = 'Geen data';
+                document.getElementById('medianPrice').textContent = 'Geen data';
+                document.getElementById('priceRange').textContent = 'Geen data';
+                document.getElementById('totalWithPrices').textContent = '0';
+            }
+            
+            // Display condition analysis
+            displayConditionAnalysis(data.conditie_analyse);
+            
+            // Display supplier analysis
+            displaySupplierAnalysis(data.aanbieder_analyse);
+        }
+        
+        function displayConditionAnalysis(conditionData) {
+            const container = document.getElementById('conditionAnalysis');
+            
+            if (!conditionData || Object.keys(conditionData).length === 0) {
+                container.innerHTML = '<p style="color: #666;">Geen conditiegegevens beschikbaar</p>';
+                return;
+            }
+            
+            let html = '<table class="analysis-table">';
+            html += '<thead><tr><th>Conditie</th><th>Aantal</th><th>Gemiddeld</th><th>Mediaan</th><th>Min - Max</th></tr></thead>';
+            html += '<tbody>';
+            
+            Object.entries(conditionData).forEach(([condition, stats]) => {
+                html += `<tr>
+                    <td><strong>${condition}</strong></td>
+                    <td>${stats.count}</td>
+                    <td>€${stats.gemiddelde}</td>
+                    <td>€${stats.mediaan}</td>
+                    <td>€${stats.minimum} - €${stats.maximum}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+        
+        function displaySupplierAnalysis(supplierData) {
+            const container = document.getElementById('supplierAnalysis');
+            
+            if (!supplierData || supplierData.length === 0) {
+                container.innerHTML = '<p style="color: #666;">Geen leveranciersgegevens beschikbaar</p>';
+                return;
+            }
+            
+            let html = '<table class="analysis-table">';
+            html += '<thead><tr><th>Aanbieder</th><th>Producten</th><th>Gemiddeld</th><th>Laagste</th><th>Hoogste</th></tr></thead>';
+            html += '<tbody>';
+            
+            supplierData.slice(0, 8).forEach(supplier => {
+                html += `<tr>
+                    <td><strong>${supplier.aanbieder}</strong></td>
+                    <td>${supplier.aantal_producten}</td>
+                    <td>€${supplier.gemiddelde_prijs}</td>
+                    <td>€${supplier.laagste_prijs}</td>
+                    <td>€${supplier.hoogste_prijs}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+        
+        function displayCategoryOverview(categories) {
+            const container = document.getElementById('categoryCards');
+            
+            let html = '';
+            categories.forEach(category => {
+                const priceDisplay = category.gemiddelde_prijs 
+                    ? `€${category.gemiddelde_prijs}` 
+                    : 'Geen prijzen';
+                const priceClass = category.gemiddelde_prijs ? '' : 'no-price';
+                
+                html += `<div class="category-card" onclick="showPriceAnalysis('${category.categorie}')">
+                    <h4>${category.categorie}</h4>
+                    <div class="category-stats">
+                        <span>${category.totaal_producten} producten</span>
+                        <span>${category.producten_met_prijs} met prijs</span>
+                    </div>
+                    <div class="category-price ${priceClass}">
+                        ${priceDisplay}
+                        ${category.gemiddelde_prijs ? '<small> gemiddeld</small>' : ''}
+                    </div>
+                </div>`;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function populateCategorySelector(categories) {
+            const select = document.getElementById('analysisCategory');
+            
+            // Clear existing options (except "Alle categorieën")
+            select.innerHTML = '<option value="">Alle categorieën</option>';
+            
+            // Add category options
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.categorie;
+                option.textContent = `${category.categorie} (${category.totaal_producten})`;
+                
+                // Select current category if we're in filtered mode
+                if (currentAnalysisCategory === category.categorie) {
+                    option.selected = true;
+                }
+                
+                select.appendChild(option);
+            });
+        }
+        
+        function filterAnalysisByCategory() {
+            const selectedCategory = document.getElementById('analysisCategory').value;
+            showPriceAnalysis(selectedCategory || null);
+        }
+
+        function analyzeCompetition() {
+            const targetPrice = parseFloat(document.getElementById('targetPrice').value);
+            const margin = parseFloat(document.getElementById('priceMargin').value);
+            
+            if (!targetPrice || targetPrice <= 0) {
+                showError('Voer een geldige doelprijs in');
+                return;
+            }
+            
+            // Include current category filter if active
+            let url = `/api/competitive-analysis/${currentSessionId}?target_price=${targetPrice}&margin=${margin}`;
+            if (currentAnalysisCategory) {
+                url += `&category=${encodeURIComponent(currentAnalysisCategory)}`;
+            }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showError(data.error);
+                        return;
+                    }
+                    displayCompetitiveResults(data);
+                })
+                .catch(error => {
+                    showError('Fout bij concurrentieanalyse');
+                    console.error('Error:', error);
+                });
+        }
+        
+        function displayCompetitiveResults(data) {
+            const container = document.getElementById('competitiveResults');
+            
+            let html = `<h4 style="margin: 20px 0 10px 0;">Gevonden: ${data.aantal_gevonden} concurrerende producten</h4>`;
+            html += `<p style="color: #666; margin-bottom: 20px;">Prijsrange: €${(data.target_prijs * (1 - data.marge_percentage/100)).toFixed(2)} - €${(data.target_prijs * (1 + data.marge_percentage/100)).toFixed(2)}</p>`;
+            
+            if (data.concurrerende_producten.length === 0) {
+                html += '<p style="color: #666;">Geen concurrerende producten gevonden in deze prijsrange.</p>';
+            } else {
+                data.concurrerende_producten.slice(0, 10).forEach(product => {
+                    html += `<div class="competitive-product">
+                        <div class="product-info">
+                            <h5>${product.titel || 'Onbekend product'}</h5>
+                            <p>${product.soort_onderdeel} • ${product.conditie || 'Onbekende conditie'}</p>
+                        </div>
+                        <div class="price-info">
+                            <div class="price">€${product.prijs_numeriek}</div>
+                            <div class="supplier">${product.aanbieder}</div>
+                        </div>
+                    </div>`;
+                });
+            }
+            
+            container.innerHTML = html;
+            container.style.display = 'block';
+        }
+        
+        function exportAnalysis() {
+            if (!currentSessionId) return;
+            
+            // Voor nu, gebruik de bestaande export functie
+            // Later kunnen we een speciale analyse export maken
+            showAlert('info', 'Gebruik de CSV export knop in de resultaten sectie om alle data te exporteren');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('categoriesModal');
+            if (event.target === modal) {
+                closeCategoriesModal();
+            }
+        }
+    </script>
+</body>
+</html>
