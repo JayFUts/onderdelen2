@@ -70,14 +70,30 @@ class OnderdelenLijnScraper:
         # Set user agent to avoid detection
         options.add_argument('--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
         
-        # Gebruik webdriver_manager voor automatisch driver beheer
-        driver_path = ChromeDriverManager().install()
-        # Fix voor webdriver-manager pad probleem
-        if driver_path.endswith('THIRD_PARTY_NOTICES.chromedriver'):
-            driver_path = driver_path.replace('THIRD_PARTY_NOTICES.chromedriver', 'chromedriver')
+        # Voor Railway deployment: gebruik system Chrome binary
+        import os
         
-        service = Service(driver_path)
-        self.driver = webdriver.Chrome(service=service, options=options)
+        # Set Chrome binary location for Railway
+        chrome_binary = '/usr/bin/google-chrome-stable'
+        if os.path.exists(chrome_binary):
+            options.binary_location = chrome_binary
+        
+        try:
+            # Probeer eerst zonder driver manager (voor Docker/Railway)
+            self.driver = webdriver.Chrome(options=options)
+            logger.info("Chrome driver initialized without manager")
+        except Exception as e:
+            logger.info(f"Failed without manager: {e}, trying with ChromeDriverManager")
+            # Fallback naar webdriver manager
+            driver_path = ChromeDriverManager().install()
+            if driver_path.endswith('THIRD_PARTY_NOTICES.chromedriver'):
+                driver_path = driver_path.replace('THIRD_PARTY_NOTICES.chromedriver', 'chromedriver')
+            
+            # Make chromedriver executable
+            os.chmod(driver_path, 0o755)
+            
+            service = Service(driver_path)
+            self.driver = webdriver.Chrome(service=service, options=options)
         self.wait = WebDriverWait(self.driver, 20)
         
         logger.info("Chrome driver setup complete")
