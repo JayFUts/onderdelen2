@@ -162,6 +162,11 @@ def scrape_category_with_progress(scraper, category_url, session):
             break
             
 
+@app.route('/health')
+def health():
+    """Health check endpoint voor Railway"""
+    return jsonify({"status": "healthy", "service": "onderdelenlijn-scraper"}), 200
+
 @app.route('/')
 def index():
     """Hoofdpagina met het dashboard"""
