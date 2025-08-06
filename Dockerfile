@@ -32,9 +32,10 @@ RUN mkdir -p templates
 ENV PYTHONUNBUFFERED=1
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
+ENV PORT=8080
 
 # Expose port
-EXPOSE $PORT
+EXPOSE 8080
 
-# Run the Flask application
-CMD gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 300 app:app
+# Run the Flask application with proper PORT handling
+CMD gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 1 --threads 2 --timeout 300 --preload app:app
