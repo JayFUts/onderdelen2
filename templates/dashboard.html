@@ -637,6 +637,60 @@
                 margin: 10% auto;
             }
         }
+        /* AI Analysis Styles */
+        .ai-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .ai-recommendation {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .ai-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00A8CC;
+        }
+        
+        .confidence-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .confidence-high { background: #d4edda; color: #155724; }
+        .confidence-medium { background: #fff3cd; color: #856404; }
+        .confidence-low { background: #f8d7da; color: #721c24; }
+        
+        .ai-analysis-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-analysis-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -775,6 +829,38 @@
             <div style="text-align: center; margin-top: 30px;">
                 <button class="btn btn-primary" onclick="resetSearch()">Nieuwe Zoekopdracht</button>
                 <button class="btn btn-success" onclick="showPriceAnalysis()" style="margin-left: 10px;">📊 Prijsanalyse</button>
+                <button class="ai-analysis-btn" onclick="showAIAnalysis()" style="margin-left: 10px;">
+                    <span style="font-size: 16px;">🤖</span> AI Prijsadvies
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Analysis Section -->
+    <div class="price-analysis-section" id="aiAnalysisSection" style="display: none;">
+        <div class="card">
+            <div class="card-header">
+                <h2>🤖 AI Prijsadvies Analyse</h2>
+                <p>Intelligente prijsaanbevelingen op basis van marktanalyse</p>
+                <div class="ai-badge" style="margin-top: 10px;">
+                    Powered by AI
+                </div>
+            </div>
+            
+            <!-- AI Analysis Loading -->
+            <div id="aiAnalysisLoading" class="text-center" style="padding: 40px;">
+                <div class="spinner"></div>
+                <p style="margin-top: 20px; color: #666;">AI analyseert marktdata...</p>
+            </div>
+            
+            <!-- AI Analysis Results -->
+            <div id="aiAnalysisResults" style="display: none; padding: 20px;">
+                <!-- AI recommendations will be populated here -->
+            </div>
+            
+            <!-- Back Button -->
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="hideAIAnalysis()">Terug naar Resultaten</button>
             </div>
         </div>
     </div>
@@ -1672,6 +1758,192 @@
             if (event.target === modal) {
                 closeCategoriesModal();
             }
+        }
+        
+        // AI Analysis Functions
+        async function showAIAnalysis() {
+            if (!currentSessionId) {
+                alert('Geen sessie actief. Voer eerst een zoekopdracht uit.');
+                return;
+            }
+            
+            // Hide other sections and show AI analysis
+            document.getElementById('searchSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('priceAnalysisSection').style.display = 'none';
+            document.getElementById('aiAnalysisSection').style.display = 'block';
+            
+            // Show loading
+            document.getElementById('aiAnalysisLoading').style.display = 'block';
+            document.getElementById('aiAnalysisResults').style.display = 'none';
+            
+            try {
+                const response = await fetch(`/api/ai-analysis/${currentSessionId}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayAIResults(data);
+                } else {
+                    showAIError(data.error || 'AI analyse mislukt');
+                }
+            } catch (error) {
+                showAIError('Fout bij AI analyse: ' + error.message);
+            }
+        }
+        
+        function displayAIResults(data) {
+            document.getElementById('aiAnalysisLoading').style.display = 'none';
+            document.getElementById('aiAnalysisResults').style.display = 'block';
+            
+            let html = '';
+            
+            // Check if OpenAI analysis is available
+            if (data.analysis && !data.error) {
+                html += `
+                    <div class="ai-recommendation">
+                        <h3>🧠 AI Marktanalyse</h3>
+                        <div style="white-space: pre-wrap; line-height: 1.6;">${data.analysis}</div>
+                    </div>
+                `;
+            }
+            
+            // Show recommendations
+            if (data.recommendations && data.recommendations.length > 0) {
+                html += '<h3 style="margin-top: 30px;">📊 Prijsaanbevelingen per Categorie</h3>';
+                html += '<div class="recommendations-grid" style="margin-top: 20px;">';
+                
+                data.recommendations.forEach(rec => {
+                    const margin = (rec.recommendation.recommended_price - (rec.recommendation.recommended_price * 0.85)).toFixed(2);
+                    const confidenceClass = `confidence-${rec.recommendation.confidence}`;
+                    
+                    html += `
+                        <div class="category-card">
+                            <h4>${rec.category}</h4>
+                            <div class="ai-recommendation">
+                                <div class="ai-price">€${rec.recommendation.recommended_price}</div>
+                                <span class="confidence-indicator ${confidenceClass}">
+                                    ${rec.recommendation.confidence === 'high' ? 'Hoge zekerheid' : 
+                                      rec.recommendation.confidence === 'medium' ? 'Gemiddelde zekerheid' : 
+                                      'Lage zekerheid'}
+                                </span>
+                                <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                                    ${rec.recommendation.reasoning}
+                                </p>
+                                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5e5e5;">
+                                    <small>
+                                        <strong>Marktdata:</strong><br>
+                                        • ${rec.recommendation.market_analysis.competitors} concurrenten<br>
+                                        • Gem. prijs: €${rec.recommendation.market_analysis.avg_price}<br>
+                                        • Range: ${rec.recommendation.market_analysis.price_range}<br>
+                                        • Geschatte marge: €${margin} (15%)
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            }
+            
+            // Add API key notice if needed
+            if (data.error && data.error.includes('OpenAI API key')) {
+                html += `
+                    <div class="alert alert-info" style="margin-top: 20px;">
+                        <strong>💡 Tip:</strong> Voor geavanceerde AI analyse met OpenAI, 
+                        voeg je API key toe als environment variable: <code>OPENAI_API_KEY</code>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('aiAnalysisResults').innerHTML = html;
+        }
+        
+        function showAIError(error) {
+            document.getElementById('aiAnalysisLoading').style.display = 'none';
+            document.getElementById('aiAnalysisResults').style.display = 'block';
+            document.getElementById('aiAnalysisResults').innerHTML = `
+                <div class="alert alert-danger">
+                    <strong>Fout:</strong> ${error}
+                </div>
+            `;
+        }
+        
+        function hideAIAnalysis() {
+            document.getElementById('aiAnalysisSection').style.display = 'none';
+            document.getElementById('searchSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+        
+        // Add instant price recommendation to product cards
+        function addAIPriceButton(productElement, productId) {
+            const button = document.createElement('button');
+            button.className = 'ai-analysis-btn';
+            button.style.cssText = 'padding: 5px 10px; font-size: 12px; margin-top: 10px;';
+            button.innerHTML = '🤖 AI Prijs';
+            button.onclick = () => getInstantPrice(productId);
+            productElement.appendChild(button);
+        }
+        
+        async function getInstantPrice(productId) {
+            try {
+                const response = await fetch(`/api/instant-price/${currentSessionId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ product_id: productId })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showInstantPriceModal(data);
+                } else {
+                    alert('Fout: ' + (data.error || 'Prijsaanbeveling mislukt'));
+                }
+            } catch (error) {
+                alert('Fout bij ophalen prijsaanbeveling: ' + error.message);
+            }
+        }
+        
+        function showInstantPriceModal(data) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            
+            const confidenceClass = `confidence-${data.recommendation.confidence}`;
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                    <h2>🤖 AI Prijsaanbeveling</h2>
+                    <div class="ai-recommendation" style="margin-top: 20px;">
+                        <h4>${data.product.product_naam || 'Product'}</h4>
+                        <div class="ai-price" style="text-align: center; margin: 20px 0;">
+                            €${data.recommendation.recommended_price}
+                        </div>
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <span class="confidence-indicator ${confidenceClass}">
+                                ${data.recommendation.confidence === 'high' ? 'Hoge zekerheid' : 
+                                  data.recommendation.confidence === 'medium' ? 'Gemiddelde zekerheid' : 
+                                  'Lage zekerheid'}
+                            </span>
+                        </div>
+                        <p>${data.recommendation.reasoning}</p>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e5e5;">
+                            <small>
+                                <strong>Analyse gebaseerd op:</strong><br>
+                                • ${data.competitors_analyzed} vergelijkbare producten<br>
+                                • Gemiddelde marktprijs: €${data.recommendation.market_analysis.avg_price}<br>
+                                • Prijsrange: ${data.recommendation.market_analysis.price_range}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
         }
     </script>
 </body>

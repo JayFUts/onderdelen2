@@ -15,6 +15,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from onderdelenlijn_scraper import OnderdelenLijnScraper
 from price_analysis import PriceAnalyzer
+from ai_price_analyzer import AIPriceAnalyzer
 
 app = Flask(__name__)
 CORS(app)
@@ -550,6 +551,102 @@ def get_competitive_analysis(session_id):
         
     except Exception as e:
         return jsonify({'error': f'Fout bij concurrentieanalyse: {str(e)}'}), 500
+
+
+@app.route('/api/ai-analysis/<session_id>')
+def get_ai_analysis(session_id):
+    """AI-gestuurde prijsanalyse"""
+    if session_id not in active_sessions:
+        return jsonify({'error': 'Sessie niet gevonden'}), 404
+    
+    try:
+        session = active_sessions[session_id]
+        
+        # Check of er producten zijn
+        if not session.products:
+            return jsonify({'error': 'Geen producten gevonden voor analyse'}), 400
+        
+        # Initialiseer AI analyzer
+        ai_analyzer = AIPriceAnalyzer()
+        
+        # Voer AI analyse uit
+        ai_results = ai_analyzer.analyze_pricing(session.products)
+        
+        # Als OpenAI niet geconfigureerd is, gebruik fallback
+        if 'error' in ai_results:
+            # Gebruik instant recommendations zonder OpenAI
+            recommendations = []
+            for category_products in _group_by_category(session.products).values():
+                if category_products:
+                    product = category_products[0]
+                    recommendation = ai_analyzer.get_instant_price_recommendation(
+                        product, 
+                        category_products
+                    )
+                    recommendations.append({
+                        'category': product.get('soort_onderdeel', 'Onbekend'),
+                        'recommendation': recommendation
+                    })
+            
+            ai_results['recommendations'] = recommendations
+        
+        return jsonify(ai_results)
+        
+    except Exception as e:
+        return jsonify({'error': f'AI analyse mislukt: {str(e)}'}), 500
+
+
+@app.route('/api/instant-price/<session_id>', methods=['POST'])
+def get_instant_price_recommendation(session_id):
+    """Directe AI prijsaanbeveling voor specifiek product"""
+    if session_id not in active_sessions:
+        return jsonify({'error': 'Sessie niet gevonden'}), 404
+    
+    try:
+        data = request.json
+        product_id = data.get('product_id')
+        
+        session = active_sessions[session_id]
+        
+        # Vind het product
+        product = None
+        for p in session.products:
+            if p.get('product_id') == product_id:
+                product = p
+                break
+        
+        if not product:
+            return jsonify({'error': 'Product niet gevonden'}), 404
+        
+        # Vind vergelijkbare producten
+        category = product.get('soort_onderdeel', '')
+        competitors = [p for p in session.products 
+                      if p.get('soort_onderdeel') == category 
+                      and p.get('product_id') != product_id]
+        
+        # Get AI recommendation
+        ai_analyzer = AIPriceAnalyzer()
+        recommendation = ai_analyzer.get_instant_price_recommendation(product, competitors)
+        
+        return jsonify({
+            'product': product,
+            'recommendation': recommendation,
+            'competitors_analyzed': len(competitors)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Prijsaanbeveling mislukt: {str(e)}'}), 500
+
+
+def _group_by_category(products):
+    """Helper functie om producten te groeperen per categorie"""
+    categories = {}
+    for product in products:
+        cat = product.get('soort_onderdeel', 'Onbekend')
+        if cat not in categories:
+            categories[cat] = []
+        categories[cat].append(product)
+    return categories
 
 
 if __name__ == '__main__':
