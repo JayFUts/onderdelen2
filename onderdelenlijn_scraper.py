@@ -78,22 +78,28 @@ class OnderdelenLijnScraper:
         if os.path.exists(chrome_binary):
             options.binary_location = chrome_binary
         
-        try:
-            # Probeer eerst zonder driver manager (voor Docker/Railway)
-            self.driver = webdriver.Chrome(options=options)
-            logger.info("Chrome driver initialized without manager")
-        except Exception as e:
-            logger.info(f"Failed without manager: {e}, trying with ChromeDriverManager")
-            # Fallback naar webdriver manager
-            driver_path = ChromeDriverManager().install()
-            if driver_path.endswith('THIRD_PARTY_NOTICES.chromedriver'):
-                driver_path = driver_path.replace('THIRD_PARTY_NOTICES.chromedriver', 'chromedriver')
-            
-            # Make chromedriver executable
-            os.chmod(driver_path, 0o755)
-            
-            service = Service(driver_path)
+        # Check for system chromedriver first
+        if os.path.exists('/usr/local/bin/chromedriver'):
+            logger.info("Using system chromedriver")
+            service = Service('/usr/local/bin/chromedriver')
             self.driver = webdriver.Chrome(service=service, options=options)
+        else:
+            try:
+                # Probeer zonder service object
+                self.driver = webdriver.Chrome(options=options)
+                logger.info("Chrome driver initialized without service")
+            except Exception as e:
+                logger.info(f"Failed without service: {e}, trying with ChromeDriverManager")
+                # Fallback naar webdriver manager
+                driver_path = ChromeDriverManager().install()
+                if driver_path.endswith('THIRD_PARTY_NOTICES.chromedriver'):
+                    driver_path = driver_path.replace('THIRD_PARTY_NOTICES.chromedriver', 'chromedriver')
+                
+                # Make chromedriver executable
+                os.chmod(driver_path, 0o755)
+                
+                service = Service(driver_path)
+                self.driver = webdriver.Chrome(service=service, options=options)
         self.wait = WebDriverWait(self.driver, 20)
         
         logger.info("Chrome driver setup complete")
